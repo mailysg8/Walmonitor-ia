@@ -52,7 +52,6 @@ ui <- page_fillable(
                           "Customer type" = "customer_type"),
               selected = c("product_line")
             ),
-          actionButton("action_button", "Reset filter"),
           open = "desktop"
         ),
         layout_columns(
