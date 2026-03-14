@@ -78,7 +78,7 @@ ui <- page_fillable(
         ),
         layout_columns(
           card(
-            card_header("Sales evolution by "),
+            card_header("Sales evolution"),
             plotlyOutput("lineplot"),
             full_screen = TRUE
           ),
