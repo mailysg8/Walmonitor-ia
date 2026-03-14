@@ -6,7 +6,7 @@ Walmonitor is a dashboard for visualizing the performance of Walmart stores acro
 
 ## Instructions
 
-To access app, click on this link : (https://019cee2d-3fd5-285e-a6ac-5dcfaf9a98f6.share.connect.posit.cloud)[https://019cee2d-3fd5-285e-a6ac-5dcfaf9a98f6.share.connect.posit.cloud]
+To access app, click on this link : [https://019cee2d-3fd5-285e-a6ac-5dcfaf9a98f6.share.connect.posit.cloud](https://019cee2d-3fd5-285e-a6ac-5dcfaf9a98f6.share.connect.posit.cloud)
 
 You can run this app locally following the instructions below.
 
