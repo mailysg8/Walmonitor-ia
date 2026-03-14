@@ -7,7 +7,7 @@ library(stringr)
 
 # Load data
 walmart_data <- read.csv(
-  "../data/walmart_sales_data.csv"
+  "data/walmart_sales_data.csv"
 ) |> rename(
   invoice_id=Invoice.ID,
   branch=Branch,
