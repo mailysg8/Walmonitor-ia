@@ -6,6 +6,8 @@ Walmonitor is a dashboard for visualizing the performance of Walmart stores acro
 
 ## Instructions
 
+To access app, click on this link : (https://019cee2d-3fd5-285e-a6ac-5dcfaf9a98f6.share.connect.posit.cloud)[https://019cee2d-3fd5-285e-a6ac-5dcfaf9a98f6.share.connect.posit.cloud]
+
 You can run this app locally following the instructions below.
 
 1. Clone this repository:
@@ -20,9 +22,9 @@ You can run this app locally following the instructions below.
     cd Walmonitor-ia
     ```
 
-3. Open project (recommended with Rstudio) and install packages by running the following commands in the Console :
+3. Open the project in RStudio and install the required packages by running the following in the RStudio Console :
 
-    ```bash
+    ```r
     install.packages(c("shiny","bslib","dplyr","plotly","ggplot2","stringr"))
     ```
 
@@ -32,5 +34,5 @@ You can run this app locally following the instructions below.
     shiny::runApp('mds/532/Walmonitor-ia/src')
     ```
 
-5. The app should open in a seperate window. Alternatively, check the Console for the local URL (e.g `http://127.0.0.1:6487`) and open it in your web browser to view the dashboard.
+5. The app will open automatically in a new window. Alternatively, check the Console for the local URL (e.g. `http://127.0.0.1:6487`) and open it in your browser.
 
