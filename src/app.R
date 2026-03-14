@@ -22,6 +22,14 @@ walmart_data <- read.csv(
   ) |>
   mutate(date = as.Date(date, format = "%Y-%m-%d")) 
 
+# Helper function
+compare <- function(current, baseline) {
+  pct = round((current - baseline) / abs(baseline) * 100,2)
+  sign = if (pct >= 0) {"+"} else {""}
+  badge = paste0(sign, pct, "% compared to January average (",round(baseline,2), "$)")
+  return(badge)
+}
+
 # UI
 ui <- page_fillable(
     title = "Walmonitor",
@@ -49,24 +57,31 @@ ui <- page_fillable(
           open = "desktop"
         ),
         layout_columns(
+          value_box(
+            title = "Average Sales",
+            value = textOutput("avg_sales"),
+            p(textOutput("avg_sales_compare"))
+          ),
+          value_box(
+            title = "Max Sales",
+            value = textOutput("max_sales"),
+            p(textOutput("max_date")),
+            p(textOutput("max_type"))
+          ),
+          value_box(
+            title = "Min Sales",
+            value = textOutput("min_sales"),
+            p(textOutput("min_date")),
+            p(textOutput("min_type"))
+          ),
+          fill = FALSE
+        ),
+        layout_columns(
           card(
             card_header("Sales evolution by "),
             plotlyOutput("lineplot"),
             full_screen = TRUE
           ),
-        ),
-        layout_columns(
-          card(
-            card_header("Output 2"),
-            dataTableOutput("wal_data"),
-            full_screen = TRUE
-          ),
-          card(
-            card_header("Output 3"),
-            dataTableOutput("wal_data"),
-            full_screen = TRUE
-          ),
-          col_widths = c(6, 6)
         )
       
     )
@@ -77,20 +92,72 @@ ui <- page_fillable(
 server <- function(input, output, session) {
   filtered_data <- reactive({
     walmart_data  |>
-      filter( if (input$input_branch=='all') {branch %in% c('A','B','C')}
-              else {branch %in% input$input_branch}
+      filter( (if (input$input_branch=='all') {branch %in% c('A','B','C')}
+              else {branch %in% input$input_branch})
       ) |>
       group_by(date, !!sym(input$input_comparison)) |> 
       summarize(total = sum(total))
     
   })
   
-  output$wal_data <- renderDataTable({
-    filtered_data()
+  output$avg_sales <- renderText({
+    avg_df <- filtered_data() |> 
+      filter(between(date,as.Date("2019-02-01"), as.Date("2019-03-31")))  
+    
+    avg <- mean(avg_df$total)
+  
+    paste0(round(avg,2),"$")
+  })
+  
+  output$avg_sales_compare <- renderText({
+    jan_df <- filtered_data() |> 
+      filter(between(date,as.Date("2019-01-01"), as.Date("2019-01-31"))) 
+    
+    jan_avg <- mean(jan_df$total)
+    
+    avg_df <- filtered_data() |> 
+      filter(between(date,as.Date("2019-02-01"), as.Date("2019-03-31")))  
+    
+    avg <- mean(avg_df$total)
+    
+    compare(avg, jan_avg)
+  })
+  
+  output$max_sales <- renderText({
+    max_df <- filtered_data() |>  arrange(desc(total))
+    paste0(round(max_df$total[1],2),"$")
+  })
+  
+  output$max_date <- renderText({
+    max_df <- filtered_data() |>  arrange(desc(total))
+    paste0("Reached on : ",max_df$date[1])
+  })
+  
+  output$max_type <- renderText({
+    max_df <- filtered_data() |>  arrange(desc(total))
+    paste0(str_replace(str_to_title(input$input_comparison), "_", " ") , " : ", max_df[1,2])
+  })
+  
+  output$min_sales <- renderText({
+    min_df <- filtered_data() |>  arrange(total)
+    paste0(round(min_df$total[1],2),"$")
+  })
+  
+  output$min_date <- renderText({
+    min_df <- filtered_data() |>  arrange(total)
+    paste0("Reached on : ",min_df$date[1])
+  })
+  
+  output$min_type <- renderText({
+    min_df <- filtered_data() |>  arrange(total)
+    paste0(str_replace(str_to_title(input$input_comparison), "_", " ") , " : ", min_df[1,2])
   })
   
   output$lineplot <- renderPlotly({
-    plot <- ggplot(filtered_data(), aes(x=date, y=total, fill=!!sym(input$input_comparison))) +
+    df <- filtered_data() |> 
+      filter(between(date,as.Date("2019-02-01"), as.Date("2019-03-31")))
+    
+    plot <- ggplot(df, aes(x=date, y=total, fill=!!sym(input$input_comparison))) +
       geom_area() +
       scale_x_date(date_labels = "%Y-%m-%d", date_breaks = "1 week") +
       labs(x='Date', y='Total sales ($)', , fill = str_replace(str_to_title(input$input_comparison), "_", " "))
